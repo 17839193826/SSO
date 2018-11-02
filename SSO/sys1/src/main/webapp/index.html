@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>zhuye</title>
+    <script src="script/jquery.min.js"></script>
+    <script>
+        $(function () {
+            $.get("http://localhost:8080/queryUsers.do", function (arr) {
+                for (var i = 0; i < arr.length; i++) {
+                    $("#tb").append("<tr><td>" + arr[i].id + "</td>\n" +
+                        "                <td>" + arr[i].username + "</td>\n" +
+                        "                <td>" + arr[i].password + "</td>\n" +
+                        "                <td>" + arr[i].phone + "</td>\n" +
+                        "        </tr>")
+                }
+            })
+
+            var token = getCK("userauth");
+            if (token.length == 0) {
+                //没有令牌
+                //alert("没有令牌");
+                location.href = "login.html";
+            } else {
+                console.log(token);
+                $.ajax({
+                    url: "http://localhost:8080/usercheck.do",
+                    method: "get",
+                    xhrFields: {withCredentials: true},
+                    success: function (obj) {
+                        console.log(obj);
+                        if (obj.code == 0) {
+                            console.log("已登录")
+                            $("#info").text(obj.data)
+                        } else {
+                           location.href="login.html"
+                        }
+                    }
+                })
+            }
+        })
+            //获取Cookie
+            function getCK(name) {
+                var cks1=document.cookie;
+
+                var arrc1=cks1.split(";");
+                for(i=0;i<arrc1.length;i++){
+                    var ck1=arrc1[i];
+                    var arrc2=ck1.split("=");
+                    if(arrc2[0]==name){
+                        return arrc2[1];
+                    }
+                }
+                return "";
+            }
+        function loginout() {
+            $.ajax({
+                url: "http://localhost:8080/userout.do",
+                method: "get",
+                xhrFields: {withCredentials: true},
+                success: function (obj) {
+                    if(obj.code==0){
+                        //注销成功
+                        location.href="login.html"
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+<h1>登陆成功</h1>
+用户：<span id="info"></span>
+    <table cellpadding="10" cellspacing="10">
+        <tr><td>id</td>
+                <td>username</td>
+                <td>password</td>
+                <td>phone</td>
+        </tr>
+        <tbody id="tb">
+
+        </tbody>
+    </table>
+<input type="button" onclick="loginout()" value="注销">
+</body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>登陆</title>
+    <script src="script/jquery.min.js"></script>
+    <script>
+        function login() {
+            $.ajax({
+                url: $("#fm1").attr("action"),
+                method: $("#fm1").attr("method"),
+                xhrFields: {withCredentials: true},
+                data: $("#fm1").serialize(),
+                success: function (obj) {
+                    if (obj.code == 0) {
+                        location.href = "index.html";
+                    } else {
+                        alert("登录失败");
+                    }
+                }
+            })
+        }
+
+        $(function () {
+            $.ajax({
+                url: "http://localhost:8080/usercheck.do",
+                method: "get",
+                xhrFields: {withCredentials: true},
+                success: function (obj) {
+                    console.log(obj);
+                    if (obj.code == 0) {
+                        location.href = "index.html";
+                    }
+                }
+            })
+        })
+    </script>
+</head>
+<body>
+<form action="http://localhost:8080/userlogin.do" method="post" id="fm1">
+    用户名:<input type="text" name="username" id="username"><br/>
+    密码：<input type="password" name="password"><br/>
+    <input type="button" onclick="login()" value="登陆">
+    <br/>
+</form>
+</body>
+</html>
